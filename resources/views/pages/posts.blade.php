@@ -6,28 +6,36 @@
         <a href="{{ route('posts.create') }}" class="bg-blue-500 text-white px-4 py-2 rounded-md">Create Post</a>
     </div>
 
-    @foreach ($posts as $post)
-        {{-- <div class="bg-white shadow-sm rounded-lg p-6 mb-4">
-            <h2 class="text-xl font-semibold mb-2">{{ $post->title }}</h2>
-            <p class="text-gray-600 mb-4">{{ Str::limit($post->content, 200) }}</p>
-            <div class="flex justify-between items-center text-sm text-gray-500">
-                <span>By {{ $post->user->name }} on {{ $post->created_at->format('M d, Y') }}</span>
-                <div class="space-x-2">
-                    <a href="{{ route('posts.show', $post) }}" class="text-blue-500">Read more</a>
-                    @can('update', $post)
-                        <a href="{{ route('posts.edit', $post) }}" class="text-green-500">Edit</a>
-                        <form class="inline" method="POST" action="{{ route('posts.destroy', $post) }}">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="text-red-500" onclick="return confirm('Are you sure?')">Delete</button>
-                        </form>
-                    @endcan
-                </div>
-            </div>
-        </div> --}}
-        <x-post_card :post="$post" />
-    @endforeach
+    <div class="mb-6">
+        <form action="{{ route('posts') }}" method="GET" class="flex gap-2">
+            <input type="text" 
+                   name="search" 
+                   value="{{ request('search') }}"
+                   placeholder="Search posts..." 
+                   class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+            <button type="submit" 
+                    class="bg-indigo-500 text-white px-4 py-2 rounded-md hover:bg-indigo-600">
+                Search
+            </button>
+            @if(request('search'))
+                <a href="{{ route('posts') }}" 
+                   class="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600">
+                    Clear
+                </a>
+            @endif
+        </form>
+    </div>
 
-    {{ $posts->links() }}
+    @if($posts->isEmpty())
+        <div class="text-center py-8 text-gray-500">
+            No posts found.
+        </div>
+    @else
+        @foreach ($posts as $post)
+            <x-post_card :post="$post" />
+        @endforeach
+
+        {{ $posts->links() }}
+    @endif
 </div>
 @endsection

@@ -1,41 +1,31 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
+use App\Http\Resources\PostResource;
 use App\Models\Post;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
 {
     use AuthorizesRequests;
 
-    //index method
     public function index(Request $request)
     {
-        $query = Post::with('user')->latest();
-    
+        $query = Post::where('user_id', Auth::id());
+        
         if ($request->has('search')) {
-            $search = $request->get('search');
-            $query->where(function($q) use ($search) {
-                $q->where('title', 'like', "%{$search}%")
-                  ->orWhere('content', 'like', "%{$search}%");
-            });
+            $query->where('title', 'like', '%' . $request->search . '%');
         }
-    
-        $posts = $query->paginate(10)->withQueryString();
-        return view('pages.posts', compact('posts'));
+        
+        $posts = $query->latest()->paginate(10);
+        return PostResource::collection($posts);
     }
 
-    //create method
-    public function create()
-    {
-        return view('pages.post-create');
-    }
-
-    //store method
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -54,23 +44,15 @@ class PostController extends Controller
 
         $post->save();
 
-        return back()->with('success', 'Post created successfully!');
+        return new PostResource($post);
     }
 
-    //show method
     public function show(Post $post)
     {
-        return view('pages.post-show', compact('post'));
+        $this->authorize('view', $post);
+        return new PostResource($post);
     }
 
-    //edit method
-    public function edit(Post $post)
-    {
-        $this->authorize('update', $post);
-        return view('pages.post-edit', compact('post'));
-    }
-
-    //update method
     public function update(Request $request, Post $post)
     {
         $this->authorize('update', $post);
@@ -91,10 +73,9 @@ class PostController extends Controller
 
         $post->update($validated);
 
-        return redirect()->route('posts.show', $post)->with('success', 'Post updated successfully.');
+        return new PostResource($post);
     }
 
-    //destroy method
     public function destroy(Post $post)
     {
         $this->authorize('delete', $post);
@@ -105,6 +86,6 @@ class PostController extends Controller
 
         $post->delete();
 
-        return redirect()->route('posts')->with('success', 'Post deleted successfully.');
+        return response()->json(null, 204);
     }
 }
