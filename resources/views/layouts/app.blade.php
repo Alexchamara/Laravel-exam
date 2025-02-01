@@ -1242,7 +1242,7 @@
                                      style="display: none;">
                                     <div class="py-1">
                                         <a href="{{ route('posts') }}" 
-                                           class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Posts</a>
+                                           class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Dashboard</a>
                                         <form method="POST" action="{{ route('logout') }}">
                                             @csrf
                                             <button type="submit" 

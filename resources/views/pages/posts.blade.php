@@ -3,7 +3,7 @@
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-semibold">Posts</h1>
-        <a href="{{ route('posts.create') }}" class="bg-blue-500 text-white px-4 py-2 rounded-md">Create Post</a>
+        <a href="{{ route('create.post') }}" class="bg-blue-500 text-white px-4 py-2 rounded-md">Create Post</a>
     </div>
 
     <div class="mb-6">

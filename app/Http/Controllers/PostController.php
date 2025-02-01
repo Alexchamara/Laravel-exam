@@ -29,7 +29,7 @@ class PostController extends Controller
         return view('pages.posts', compact('posts'));
     }
 
-    //create method
+    //redirect to form page
     public function create()
     {
         return view('pages.post-create');
